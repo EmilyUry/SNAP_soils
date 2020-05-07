@@ -35,11 +35,9 @@ d.info <- data[,2:5]
 data <- data[,6:32]  # just variables
 data <- data[,-c(18, 19, 24)]  ## omit NO3, PO4 and BR from IC
 
-names <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
+names(data) <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
            "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4",
            "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Phenol", "NO3", "PO4")
-
-names(data) <- names
 
 data$PO4[is.na(data$PO4)] <- 1   ### set the below detection
 data$Mg[is.na(data$Mg)] <- 0.001  ## set the below detection
@@ -66,13 +64,14 @@ pairs(data[,],
 
 #################  ### with PO4 and NO3 log transformed
 
-# Create the plots
 data$logPO4 <- log10(data$PO4)
 data$logNO3 <- log10(data$NO3)
+
+# Update the plots with the logged variables
 pairs(data[,], 
       lower.panel = panel.cor,
       upper.panel = upper.panel, 
-      cex.labels = 2)
+      cex.labels = 1.5)
 
 #######
 
@@ -92,23 +91,11 @@ data$logPO4 <- log10(data$PO4)
 data$logNO3 <- log10(data$NO3)
 
 
-# Correlation panel
-panel.cor <- function(x, y){
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  r <- round(cor(x, y), digits=2)
-  txt <- paste0("R = ", r)
-  text(0.5, 0.5, txt, col = ifelse(r > 0.5, "red", ifelse(r < -0.5, "blue", "gray70")))
-}
-# Customize upper panel
-upper.panel<-function(x, y){
-  points(x,y, pch = 19, cex = 1, col =  col3[d.info$Site])
-}
-# Create the plots
+# Create the corellation plots
 pairs(data[,], 
       lower.panel = panel.cor,
       upper.panel = upper.panel, 
-      cex.labels = 2)
+      cex.labels = 1.5)
 
 
 
