@@ -23,6 +23,10 @@ data$PO4_P_µg_l[is.na(data$PO4_P_µg_l)] <- 2   ### set the below detection
 data$Mg_mg_L[is.na(data$Mg_mg_L)] <- 0.001  ## set the below detection
 data$Treatment <- as.factor(data$Treatment)
 
+names(data) <- c("Date","Site", "Treatment", "Core", "Depth", "Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
+                  "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4", "ICNO3", "ICPO4",
+                  "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Br", "Phenol", "NO3", "PO4")
+
 col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
 col4 <- c("#5AAE61", "#d6604d", "#9970AB", "#4393C3")
 col4 <- c("#FDE725FF", "#55C667FF", "#33638DFF", "#481567FF")  # viridis
@@ -31,33 +35,45 @@ col4a <- c("#FDE72599", "#55C66799", "#33638D99", "#48156799")
 
 cid <- data[,2:5]  ## stratifying information (core ID) 
 schar <- data[,6:32]
-names(schar) <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
-                 "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4", "ICNO3", "ICPO4",
-                 "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Br", "Phenol", "NO3", "PO4")
+
 chem <- data[, c(10,14,15,16,17,18,19,22,31,32)] ## soil characteristics (pH, Cl, SO4, Na, K, Mg, Ca, NH4, NO3, PO4)
 phys <- data[, c(7, 8, 9)]
 resp <- data[, c(9, 12, 25, 26, 27, 28, 30)]
 
+par(mfrow = c(1,1), mar = c(4,8,4,5))
 
-
-## do a PCA for chemical characterisitcs of all soil cores
+#' Create a PCA for chemical characterisitcs of all soil cores
+#' 
 pca <-prcomp(chem, center = TRUE, scale = TRUE)
 print(pca)
+plot(pca)
+
+#' How many components to keep? 
+#' Test the Kaiser criterion  (Kaiser 1960)
+
+plot(pca,type="line",cex.lab=1.5, cex.main=1.5)
+abline(h=1,lty=3, col="red") ## keep only the first three principle components (var > 1)
+
+
+## explore some correlations
+cor(chem$Cl, pca$x[,1])
+plot(chem$Cl, pca$x[,1], xlab = "Chloride", ylab = "PC1", frame = F)
+plot(resp$Cmin.s, pca$x[,1], xlab = "Cmin", ylab = "PC1", frame = F)  ## no correlation
 
 summary(pca) #100% of PCA variance, but not the actual NMS axis variance
 pca.scores<-pca$x
-
-df <- cbind(cid, pca.scores[,1:2])
-
+pca.loading <- pca$rotation
+df <- cbind(cid, pca.scores[,1:3])
 df <- cbind(df, resp)
 
-
-### facet plot the PCA
-
-par(mfrow = c(1,4), mar = c(12,4,8,1))
+#' Plot the pca
 
 plot(df$PC1, df$PC2, pch = 16, cex = 0.9, main = "PCA all soil cores", 
      xlab = "PC1", ylab = "PC2")
+arrows(0,0, pca.loading[,1]*7, pca.loading[,2]*7, length = 0.1, lwd = 1.5, col = "red")
+text(pca.loading[,1]*7.5, pca.loading[,2]*7.3, row.names(pca.loading), cex = 0.8, col = "red")
+
+#' Facet out the PCA, a plot for each experimental site
 
 df1 <- df[which(df$Site == "1"),]
 df3 <- df[which(df$Site == "3"),]
@@ -68,6 +84,8 @@ par(mfrow = c(1,4), mar = c(12,4,8,1), xpd=TRUE)
 plot(df$PC1, df$PC2, pch = 16, cex = 0.9,
      xlab = "PC1", ylab = "PC2", 
      xlim = c(-8, 3), ylim = c(-3,5))
+arrows(0,0, pca.loading[,1]*7.5, pca.loading[,2]*7.5, length = 0.1, lwd = 1.5, col = "red")
+text(pca.loading[,1]*8, pca.loading[,2]*8, row.names(pca.loading), cex = 1, col = "red")
 title(main = "PCA all soil cores", line = 1)
 
 plot(df1$PC1, df1$PC2, pch = 22, cex = 1.5, 
@@ -126,11 +144,11 @@ fviz_pca_biplot(pca, repel = TRUE,
 
 #### get the info out of the pca
 # Eigenvalues
-eig.val <- get_eigenvalue(res.pca)
+eig.val <- get_eigenvalue(pca)
 eig.val
 
 # Results for Variables
-res.var <- get_pca_var(res.pca)
+res.var <- get_pca_var(pca)
 res.var$coord          # Coordinates
 res.var$contrib        # Contributions to the PCs
 res.var$cos2           # Quality of representation 
