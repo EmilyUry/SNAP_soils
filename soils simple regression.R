@@ -29,26 +29,17 @@ col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
 
 
 data <- read.csv("2019_SNAP_master.csv", header = TRUE)
-
-
 d.info <- data[,2:5]
 
 
-par(bg = "white")
-
-data <- data[,6:30]  # just variables
-data <- data[,-17]  ## omit missing variable
-data <- data[, -23]
-
+data <- data[,6:32]  # just variables
+data <- data[,-c(18, 19, 24)]  ## omit NO3, PO4 and BR from IC
 
 names <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
-           "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NO3", "PO4",
-           "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Phenol")
+           "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4",
+           "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Phenol", "NO3", "PO4")
 
 names(data) <- names
-pairs(data[,], pch = 19, cex =0.5, upper.panel=NULL, 
-      col = col3[d.info$Site])
-
 
 ### correlation  ## with Na.omits
 
