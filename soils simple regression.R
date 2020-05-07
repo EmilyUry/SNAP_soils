@@ -41,7 +41,11 @@ names <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN",
 
 names(data) <- names
 
-### correlation  ## with Na.omits
+data$PO4[is.na(data$PO4)] <- 1   ### set the below detection
+data$Mg[is.na(data$Mg)] <- 0.001  ## set the below detection
+data <- na.omit(data)   ## omits three rows with values missing for SIR
+
+### correlation  ## with Na.omits (3 rows)
 
 # Correlation panel
 panel.cor <- function(x, y){
@@ -49,58 +53,43 @@ panel.cor <- function(x, y){
   par(usr = c(0, 1, 0, 1))
   r <- round(cor(x, y), digits=2)
   txt <- paste0("R = ", r)
-  text(0.5, 0.5, txt)
+  text(0.5, 0.5, txt, col = ifelse(r > 0.5, "red", ifelse(r < -0.5, "blue", "gray70")))
 }
 # Customize upper panel
 upper.panel<-function(x, y){
-  points(x,y, pch = 19, cex = 0.5)
+  points(x,y, pch = 19, cex = 1, col =  col3[d.info$Site])
 }
 # Create the plots
-data.lim <- na.omit(data)
-pairs(data.lim[,], 
+pairs(data[,], 
       lower.panel = panel.cor,
       upper.panel = upper.panel)
 
 #################  ### with PO4 and NO3 log transformed
 
-# Correlation panel
-panel.cor <- function(x, y){
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  r <- round(cor(x, y), digits=2)
-  txt <- paste0("R = ", r)
-  text(0.5, 0.5, txt)
-}
-# Customize upper panel
-upper.panel<-function(x, y){
-  points(x,y, pch = 19, cex = 0.5)
-}
 # Create the plots
-data.lim <- na.omit(data)
-data.lim$PO4 <- log10(data.lim$PO4)
-data.lim$NO3 <- log10(data.lim$NO3)
-pairs(data.lim[,], 
+data$logPO4 <- log10(data$PO4)
+data$logNO3 <- log10(data$NO3)
+pairs(data[,], 
       lower.panel = panel.cor,
       upper.panel = upper.panel, 
       cex.labels = 2)
-
-
-
 
 #######
 
 ## control plots only
 data <- read.csv("2019_SNAP_master.csv", header = TRUE)
 data <- data[which(data$Treatment == "Control"),]
-
-data <- data[,2:30]  # just variables
-data <- data[,-21]  ## omit missing variable
-data <- data[, -27]
-
-names <- c("Site","Treatment", "Core", "Depth",  "Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
-           "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NO3", "PO4",
-           "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Phenol")
-names(data) <- names
+d.info <- data[,2:5]
+data <- data[,6:32]  # just variables
+data <- data[,-c(18, 19, 24)]  ## omit NO3, PO4 and BR from IC
+names(data) <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
+           "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4",
+           "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Phenol", "NO3", "PO4")
+data$PO4[is.na(data$PO4)] <- 1   ### set the below detection
+data$Mg[is.na(data$Mg)] <- 0.001  ## set the below detection
+data <- na.omit(data)   ## omits three rows with values missing for SIR
+data$logPO4 <- log10(data$PO4)
+data$logNO3 <- log10(data$NO3)
 
 
 # Correlation panel
@@ -109,17 +98,14 @@ panel.cor <- function(x, y){
   par(usr = c(0, 1, 0, 1))
   r <- round(cor(x, y), digits=2)
   txt <- paste0("R = ", r)
-  text(0.5, 0.5, txt)
+  text(0.5, 0.5, txt, col = ifelse(r > 0.5, "red", ifelse(r < -0.5, "blue", "gray70")))
 }
 # Customize upper panel
 upper.panel<-function(x, y){
-  points(x,y, pch = 19, cex = 1, col =  col3[data$Site])
+  points(x,y, pch = 19, cex = 1, col =  col3[d.info$Site])
 }
 # Create the plots
-data[is.na(data)] <- 0.001
-data$PO4 <- log10(data$PO4)
-data$NO3 <- log10(data$NO3)
-pairs(data[,5:27], 
+pairs(data[,], 
       lower.panel = panel.cor,
       upper.panel = upper.panel, 
       cex.labels = 2)
