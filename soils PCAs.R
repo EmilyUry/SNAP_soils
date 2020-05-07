@@ -65,36 +65,41 @@ df5 <- df[which(df$Site == "5"),]
 
 
 par(mfrow = c(1,4), mar = c(12,4,8,1), xpd=TRUE)
-plot(df$PC1, df$PC2, pch = 16, cex = 0.9, main = "PCA all soil cores", 
+plot(df$PC1, df$PC2, pch = 16, cex = 0.9,
      xlab = "PC1", ylab = "PC2", 
      xlim = c(-8, 3), ylim = c(-3,5))
-plot(df1$PC1, df1$PC2, pch = 22, cex = 1.5, main = "Site 1 (dry - pine/oak)", 
+title(main = "PCA all soil cores", line = 1)
+
+plot(df1$PC1, df1$PC2, pch = 22, cex = 1.5, 
      xlab = "PC1", ylab = "", 
      xlim = c(-8, 3), ylim = c(-3,5),
      col = col4[df1$Treatment], 
      bg = ifelse(df1$Depth == "(5-10)", "white", col4a[df1$Treatment]))
+title(main = "Site 1 (dry - pine/oak)", line = 1)
 
 legend("bottomright", inset=c(0.0,-0.4), c("0-5 cm", "5-10 cm"), 
-       pch = c(16, 1), pt.cex=1.5, cex = 1.1,
-       col = c("gray50"), ncol = 2, title = "Depth")
+       pch = c(21, 21), pt.cex=1.5, cex = 1.2,
+       col = c("gray20"), pt.bg = c("gray70", "white"),
+       ncol = 1, title = "Depth")
 
-plot(df3$PC1, df3$PC2, pch = 21, cex = 1.5, main = "Site 3 (oak)", 
+plot(df3$PC1, df3$PC2, pch = 21, cex = 1.5, 
      xlab = "PC1", ylab = "",
      xlim = c(-8, 3), ylim = c(-3,5),
      col = col4[df3$Treatment],
      bg = ifelse(df3$Depth == "(5-10)", "white", col4a[df3$Treatment]))
+title(main = "Site 3 (oak)", line = 1)
 
 legend("bottomleft", inset=c(0,-0.4), c("Control", "Nutrient", "Salt", "SxN"), 
        pch = 21, pt.cex = 1.5, cex = 1.2,
        col = col4, pt.bg = col4a, 
        title = "Treatment", ncol = 2)
 
-plot(df5$PC1, df5$PC2, pch = 24, cex = 1.5, main = "Site 5 (wet - cypress/mixed)", 
+plot(df5$PC1, df5$PC2, pch = 24, cex = 1.5, 
      xlab = "PC1", ylab = "", 
      xlim = c(-8, 3), ylim = c(-3,5),
      col = col4[df5$Treatment],
      bg = ifelse(df5$Depth == "(5-10)", "white", col4a[df5$Treatment]))
-
+title(main = "Site 5 (wet - cypress/mixed)", line = 1)
 
 
 
