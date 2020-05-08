@@ -23,7 +23,8 @@ data$PO4_P_µg_l[is.na(data$PO4_P_µg_l)] <- 2   ### set the below detection
 data$Mg_mg_L[is.na(data$Mg_mg_L)] <- 0.001  ## set the below detection
 data$Treatment <- as.factor(data$Treatment)
 
-names(data) <- c("Date","Site", "Treatment", "Core", "Depth", "Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
+names(data) <- c("Date","Site", "Treatment", "Core", "Depth", "Cond.", "B.D.", 
+                 "S.M.", "LOI", "pH", "Roots", "DOC", "TDN", 
                   "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4", "ICNO3", "ICPO4",
                   "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Br", "Phenol", "NO3", "PO4")
 
@@ -36,7 +37,7 @@ col4a <- c("#FDE72599", "#55C66799", "#33638D99", "#48156799")
 cid <- data[,2:5]  ## stratifying information (core ID) 
 schar <- data[,6:32]
 
-chem <- data[, c(10,14,15,16,17,18,19,22,31,32)] ## soil characteristics (pH, Cl, SO4, Na, K, Mg, Ca, NH4, NO3, PO4)
+chem <- data[, c(10,14,15,16,17,18,19,22,31,32)] ## soil vars (pH, Cl, SO4, Na, K, Mg, Ca, NH4, NO3, PO4)
 phys <- data[, c(7, 8, 9)]
 resp <- data[, c(9, 12, 25, 26, 27, 28, 30)]
 
@@ -80,7 +81,7 @@ df3 <- df[which(df$Site == "3"),]
 df5 <- df[which(df$Site == "5"),]
 
 
-par(mfrow = c(1,4), mar = c(12,4,8,1), xpd=TRUE)
+par(mfrow = c(1,4), mar = c(12,3,8,1), xpd=TRUE)
 plot(df$PC1, df$PC2, pch = 16, cex = 0.9,
      xlab = "PC1", ylab = "PC2", 
      xlim = c(-8, 3), ylim = c(-3,5))
@@ -153,7 +154,7 @@ res.var$coord          # Coordinates
 res.var$contrib        # Contributions to the PCs
 res.var$cos2           # Quality of representation 
 # Results for individuals
-res.ind <- get_pca_ind(res.pca)
-res.ind$coord          # Coordinates
-res.ind$contrib        # Contributions to the PCs
-res.ind$cos2           # Quality of representation 
+res.ind <- get_pca_ind(pca)
+#res.ind$coord          # Coordinates
+#res.ind$contrib        # Contributions to the PCs
+#res.ind$cos2           # Quality of representation 
