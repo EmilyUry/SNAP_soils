@@ -41,8 +41,8 @@ data <- read.csv("2019_SNAP_master.csv", header = TRUE)
 #' No3 and NH4 are in mmol/kg
 
 element <- c("Cl", "SO4", "Na", "K", "Mg", "Ca", "P:PO4", "N:NO3", "N:NH4")
-SW <- c(550, 28, 470, 10.2, 53, 10.3, 0.2, 0.0002, 0.0002)
-IO <- c(521, 23, 462, 9.4, 52, 9.4, 0.05, 0.001, 0.0102)
+SW <- c(550, 28, 470, 10.2, 53, 10.3, 0.2, 0.2, 0.2)
+IO <- c(521, 23, 462, 9.4, 52, 9.4, 0.05, 1, 10.2)
 ##MW <- c(35.45, 96.06, 22.99, 39.1, 24.31, 40.08, 30.97, 14)
 
 ratioSW <- SW/550
@@ -261,11 +261,11 @@ legend("topright", inset = c(-0.30, -0.2), c("Instant Ocean", "Sea water"), lty 
 #### Cl to NO3
 ###
 par(mfrow = c(1,1), mar = c(6,16,5,8), xpd=F)
-plot(rd$Cl, rd$PO4, pch = c(21,22,24)[rd$Site], col = col4[rd$Treatment],
-     bg = ifelse(rd$Depth == "(5-10)", "white", col4a[rd$Treatment]), ylim = c(0,50),
-     main = "Soil core chloride:Phosphate", xlab = "Chloride", ylab = "Phosphate")
-abline(0, ratioSW[7], lty = 1)
-abline(0, ratioIO[7], lwd = 2, lty =3)
+plot(rd$Cl, rd$NO3, pch = c(21,22,24)[rd$Site], col = col4[rd$Treatment],
+     bg = ifelse(rd$Depth == "(5-10)", "white", col4a[rd$Treatment]),
+     main = "Soil core chloride:nitrate", xlab = "Chloride", ylab = "Nitrate")
+abline(0, ratioSW[8], lty = 1)
+abline(0, ratioIO[8], lwd = 2, lty =3)
 legend("topright", inset=c(-0.3,-0.0), c("0-5 cm", "5-10 cm"), 
        pch = c(21, 21), pt.cex=1, cex = 1,
        col = c("gray20"), pt.bg = c("gray70", "white"),
@@ -281,5 +281,31 @@ legend("topright", inset=c(-0.3,0.7), c("Site 1   ", "Site 3", "Site 5"),
 legend("topright", inset = c(-0.30, -0.2), c("Instant Ocean", "Sea water"), lty = c(3, 1),
        lwd = c(2,1), xpd = TRUE)
 
+
+
+
+####
+#### Cl to PO4
+###
+par(mfrow = c(1,1), mar = c(6,16,5,8), xpd=F)
+plot(rd$Cl, rd$PO4, pch = c(21,22,24)[rd$Site], col = col4[rd$Treatment],
+     bg = ifelse(rd$Depth == "(5-10)", "white", col4a[rd$Treatment]), ylim = c(0,50),
+     main = "Soil core chloride:phosphate", xlab = "Chloride", ylab = "Phosphate")
+abline(0, ratioSW[8], lty = 1)
+abline(0, ratioIO[8], lwd = 2, lty =3)
+legend("topright", inset=c(-0.3,-0.0), c("0-5 cm", "5-10 cm"), 
+       pch = c(21, 21), pt.cex=1, cex = 1,
+       col = c("gray20"), pt.bg = c("gray70", "white"),
+       ncol = 1, title = "Depth", xpd = T)
+legend("topright", inset=c(-0.3,0.3), c("Control", "Nutrient", "Salt", "SxN"), 
+       pch = 21, pt.cex = 1, cex = 1,
+       col = col4, pt.bg = col4a, 
+       title = "Treatment", ncol = 1, xpd = T)
+legend("topright", inset=c(-0.3,0.7), c("Site 1   ", "Site 3", "Site 5"), 
+       pch = c(21,22,24), pt.cex = 1, cex = 1,
+       col = "gray20", pt.bg = "white", 
+       title = "Site", ncol = 1, xpd = T)
+legend("topright", inset = c(-0.30, -0.2), c("Instant Ocean", "Sea water"), lty = c(3, 1),
+       lwd = c(2,1), xpd = TRUE)
 
 
