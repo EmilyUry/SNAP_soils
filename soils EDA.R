@@ -86,7 +86,7 @@ x0$Plot2[x0$Treatment=="Nutrients"]<-"N"
 x0$Plot2[x0$Treatment=="Salt"]<-"S"
 x0$Plot2[x0$Treatment=="SN"]<-"B" ## B="Both"
 x0$ID<-paste(x0$Site,x0$Plot2,x0$Core,sep="")
-rownames(x0)<-x0$ID
+rownames(x0)<-x0$ID   ### create unique rownames for each core like, "1S1" etc.
 table(x0$Treatment,x0$Plot2)
 
 
@@ -106,15 +106,59 @@ plot(x0[,chembio[i]], x0[,24], xlab=chembio[i],
        ylab="Log Respiration",las=1,col=p.cols,pch=16)
 }
 
+#' ## Multivariate Correlation Structure
+
+# build a function to make a dendrogram (cluster tree)
+f.dist<-function(x){
+cmat<-cor(t(x),use="pairwise.complete.obs")
+d<-as.dist(1-abs(cmat))
+return(d)
+}
+x.conf<-x0[,c(phys,chem)]
 
 
+#' Hierarchical Cluster Analysis
+par(mfrow=c(1,1),las=1,mar=c(1,4,2,1),cex=1.0)
+plot(hclust(f.dist(t(x.conf)),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Full Data Set")
+
+#' Hierarchical Cluster Analysis - broken down by treatment
+
+par(mfrow=c(2,2),las=1,mar=c(1,4,2,1),cex=1.0)
+plot(hclust(f.dist(t(x.conf[x0$Plot2=="C",])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Control Plots")
+plot(hclust(f.dist(t(x.conf[x0$Plot2=="S",])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Salt Treatment Plots")
+plot(hclust(f.dist(t(x.conf[x0$Plot2=="N",])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Nutrient Treatment Plots")
+plot(hclust(f.dist(t(x.conf[x0$Plot2=="B",])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Salt + Nutrient Treatment Plots")
+
+#' Hierarchical Cluster Analysis - broken down by Site
+par(mfrow=c(3,1),las=1,mar=c(1,4,2,1),cex=1.0)
+plot(hclust(f.dist(t(x.conf[x0$Site==1,])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Dry Site Only")
+plot(hclust(f.dist(t(x.conf[x0$Site==3,])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Intermediate Site Only")
+plot(hclust(f.dist(t(x.conf[x0$Site==5,])),method="complete"),
+     sub="",xlab="",ylab="1-abs(cor)",main="Wet Site Only")
+
+#' ### Heat map
+heatmap(scale(x.conf),distfun=f.dist,margins=c(4,2)) ##,labRow=" ")
 
 
+#' ## Principal components analysis
 
+## Examine principal components
+ev.out<-eigen(cor(x.conf,use="pairwise.complete.obs"))
+## Cumulative Pct Variation Explained by PCs:
+names(ev.out$values)<-paste("PC",1:ncol(ev.out$vectors),sep="")
+round(((ev.out$values/sum(ev.out$values))),3)
+round(cumsum((ev.out$values/sum(ev.out$values))),2)
 
+colnames(ev.out$vectors)<-paste("PC",1:ncol(ev.out$vectors),sep="")
+rownames(ev.out$vectors)<-colnames(x.conf)
+round(ev.out$vectors[,1:6],2)
 
-
-col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
-col4 <- c("#FDE725FF", "#55C667FF", "#33638DFF", "#481567FF") ## viridis
-col4a <- c("#FDE72599", "#55C66799", "#33638D99", "#48156799") ## viridis transparent
+PCs<-(scale(x.conf)%*%ev.out$vectors[,1:6])
 
