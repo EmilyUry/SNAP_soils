@@ -40,7 +40,8 @@ names(data) <- c("Cond.", "B.D.", "S.M.", "LOI", "pH", "Roots", "DOC", "TDN",
            "Cmin.s", "Cmin.c", "SIR.s", "SIR.c", "Phenol", "NO3", "PO4")
 
 data$PO4[is.na(data$PO4)] <- 1   ### set the below detection
-data$Mg[is.na(data$Mg)] <- 0.001  ## set the below detection
+data$Mg[is.na(data$Mg)] <- 0.001
+## set the below detection
 data <- na.omit(data)   ## omits three rows with values missing for SIR
 
 ### correlation  ## with Na.omits (3 rows)
