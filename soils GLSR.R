@@ -7,3 +7,65 @@
 #' output: github_document
 #' ---
 #'
+#'
+#' **Notes:** Mutliple linear regression (MLR) and generalizations of it to adjust
+#' for confounding effects
+#' 
+#' See http://homepage.ntu.edu.tw/∼ckuan/pdf/et01/et_Ch4.pdf.
+#' 
+#' Two approaches:
+#'  1. Site/Treatment model
+#'  2. Chloride model
+#' 
+#' ### Model Assumptions
+#'  MLR models assume error terms are independent and have constant variance (homoskedasticity)
+#'  Violations: model error terms are correlated within plots because cores are
+#'  collected close together.
+#'  Evidence of variation in the model's residuals increasing with increasing moisture. 
+#'  
+#' ### Generalization of the Multiple Regression Model
+#'  GLS is an extension of the basic linear model which is designed to allow
+#'  for heteroskedastic and correlated within-group erros.
+#'  The `gls` function from the `nlme` package in R can be used. 
+#'  Errors are allowed to be correlated and/or have unequal variance. 
+#'  
+#'  Here is an example of a nested progression of GLS models, the first assuming
+#'  homoskedastic errors, the second assuming an error variance that depends on the
+#'  variable **soil moisture** (`SM`) and the third adding correlated within-plot
+#'  errors to the seconf model. 
+#'  An `ANOVA` test is used to assess the added explanatory value of each model over the 
+#'  previous one. Based on this analysis we find strong evidence for including an
+#'  error variance that depends on Moisture and evidence for the addition of correlated 
+#'  within group errors. 
+#'  
+#'  We thank Edwin Iversen for help with the above notes and the following code. 
+#'  
+#'  
+#' ## IID Error Model
+#'  
+
+setwd("C:/Users/eau6/Dropbox (Duke Bio_Ea)/My data/SNAP_compilation/SNAP_Carbon_Story")
+x <- read.csv("2019_SNAP_master.csv", header = TRUE)
+names(x) <- c("Date","Site", "Treatment", "Core", "Depth", "Cond", "BD", 
+              "SM", "LOI", "pH", "Roots", "DOC", "TDN", 
+              "Cl", "SO4", "Na", "K", "Mg", "Ca", "TIC", "TCC", "NH4", "ICNO3", "ICPO4",
+              "Cmin_s", "Cmin_c", "SIR_s", "SIR_c", "Br", "Phenol", "NO3", "PO4")
+x <- x[,-c(23, 24, 29)] ## remove ICNO3, ICPO4 and Br
+x$PO4[is.na(x$PO4)] <- 1   ### set the below detection
+x$Mg[is.na(x$Mg)] <- 0.001  ## set the below detection
+x$Roots[x$Roots == 0] <- 0.01 
+lX<-log(x[,c(11,14:19, 22, 28, 29)])
+colnames(lX)<-paste("log",colnames(lX),sep="")
+x<-cbind(x,lX); rm(lX)
+x0<-x[x$Depth=="(0-5)",]
+
+phys<-c("SM","LOI","BD","logRoots", "pH")
+chem<-c("logCl","logSO4","logNa","logK","logMg","Ca", "logNH4", "logNO3", "logPO4")
+
+
+x0 <- x0[, c("Cmin_c", "Site", "Treatment", "Depth", phys, chem)]
+
+
+
+
+
