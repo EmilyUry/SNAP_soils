@@ -45,38 +45,32 @@ x<-cbind(x,lX); rm(lX)
 x0<-x[x$Depth=="(0-5)",]
 
 phys<-c("SM","LOI","BD","logRoots", "pH")
-chem<-c("logCl","logSO4","logNa","logK","logMg","Ca", "logNH4", "logNO3", "logPO4")
+chem<-c("logCl","logSO4","logNa","logK","logMg","Ca", "logNH4", "logNO3", "logPO4", "DOC", "TDN", "Phenol")
 
 
-x.bas <- x[, c("Cmin_c", "Site", "Treatment", "Depth", phys, chem)]
+x.bas <- x0[, c("Cmin_s", "Site", "Treatment", "Core", phys, chem)]
 x.bas$Site<-factor(x.bas$Site)
 x.bas$Treatment<-factor(x.bas$Treatment)
-x.bas$Depth<-factor(x.bas$Depth)
 
-bas.out<-bas.lm(Cmin_c ~ . ,data = x.bas,
+
+
+bas.out0<-bas.lm(Cmin_s ~ . ,data = x.bas,
+                modelprior = uniform(),
+                prior="JZS", pivot=TRUE)
+
+bas.out1<-bas.lm(Cmin_s ~ . ,data = x.bas,
+                 modelprior = uniform(),
+                 prior="JZS", pivot=TRUE,
+                 include.always = (Cmin_s ~ Site))
+
+bas.out2<-bas.lm(Cmin_s ~ . ,data = x.bas,
                 modelprior = uniform(),
                 prior="JZS", pivot=TRUE,
-                include.always = (Cmin_c ~ Site + Treatment + Depth))
-summary(bas.out)
-
-par(mfrow = c(1,1))
-image(bas.out,rotate=FALSE,las=1)
+                include.always = (Cmin_s ~ Site + Treatment))
 
 
-par(mfrow=c(2,2),las=1)
-plot(bas.out,ask=FALSE)
+bas.out <- bas.out1
 
-
-#' ## Measured Treatment Effect, depth 0-5 only
-
-x0.bas <- x0[, c("Cmin_c", "Site", "Treatment", phys, chem)]
-x0.bas$Site<-factor(x0.bas$Site)
-x0.bas$Treatment<-factor(x0.bas$Treatment)
-
-bas.out<-bas.lm(Cmin_c ~ . ,data = x0.bas,
-                modelprior = uniform(),
-                prior="JZS", pivot=TRUE,
-                include.always = (Cmin_c ~ Site + Treatment))
 summary(bas.out)
 par(mfrow = c(1,1))
 image(bas.out,rotate=FALSE,las=1)
@@ -87,14 +81,13 @@ plot(bas.out,ask=FALSE)
 #' ## Measured Treatment Effect, depth 0-5 only, 
 #' ### Site 1 only
 
-x0.bas <- x0[, c("Cmin_c", "Treatment", phys, chem)]
+x0.bas <- x0[, c("Cmin_s", "Treatment", phys, chem)]
 x0.bas$Treatment<-factor(x0.bas$Treatment)
 
-bas.out<-bas.lm(Cmin_c ~ . ,data = x0.bas,
+bas.out<-bas.lm(Cmin_s ~ . ,data = x0.bas,
                 modelprior = uniform(),
                 prior="JZS", pivot=TRUE,
-                subset=(x0$Site==1),
-                include.always = (Cmin_c ~ Treatment))
+                subset=(x0$Site==1))
 summary(bas.out)
 par(mfrow = c(1,1))
 image(bas.out,rotate=FALSE,las=1)
@@ -104,14 +97,13 @@ plot(bas.out,ask=FALSE)
 #' ## Measured Treatment Effect, depth 0-5 only, 
 #' ### Site 3 only
 
-x0.bas <- x0[, c("Cmin_c", "Treatment", phys, chem)]
+x0.bas <- x0[, c("Cmin_s", "Treatment", phys, chem)]
 x0.bas$Treatment<-factor(x0.bas$Treatment)
 
-bas.out<-bas.lm(Cmin_c ~ . ,data = x0.bas,
+bas.out<-bas.lm(Cmin_s ~ . ,data = x0.bas,
                 modelprior = uniform(),
                 prior="JZS", pivot=TRUE,
-                subset=(x0$Site==3),
-                include.always = (Cmin_c ~ Treatment))
+                subset=(x0$Site==3))
 summary(bas.out)
 par(mfrow = c(1,1))
 image(bas.out,rotate=FALSE,las=1)
@@ -122,19 +114,34 @@ plot(bas.out,ask=FALSE)
 #' ## Measured Treatment Effect, depth 0-5 only, 
 #' ### Site 5 only
 
-x0.bas <- x0[, c("Cmin_c", "Treatment", phys, chem)]
+x0.bas <- x0[, c("Cmin_s", "Treatment", phys, chem)]
 x0.bas$Treatment<-factor(x0.bas$Treatment)
 
-bas.out<-bas.lm(Cmin_c ~ . ,data = x0.bas,
+bas.out<-bas.lm(Cmin_s ~ . ,data = x0.bas,
                 modelprior = uniform(),
                 prior="JZS", pivot=TRUE,
-                subset=(x0$Site==5),
-                include.always = (Cmin_c ~ Treatment))
+                subset=(x0$Site==5))
 summary(bas.out)
 par(mfrow = c(1,1))
 image(bas.out,rotate=FALSE,las=1)
 par(mfrow=c(2,2),las=1)
 plot(bas.out,ask=FALSE)
+
+
+
+
+## take a closer look at bas.out1 (all sites together with Site kept in)
+
+coef.ZS <- coef(bas.out1)
+par(mfrow = c(4,4))
+## plot(coef.ZS, ask = F) ## dont run, takes forever
+confint(coef.ZS)
+par(mfrow = c(1,1))
+plot(confint(coef.ZS, parm = 2:24))
+plot(confint(coef(bas.out1, estimator = "BMA"))) ## all models averaged
+plot(confint(coef(bas.out1, estimator = "HPM"))) ## Highest probability model
+plot(confint(coef(bas.out1, estimator = "MPM"))) ## Mean probability model
+
 
 
 #' ###Proxy Effect
