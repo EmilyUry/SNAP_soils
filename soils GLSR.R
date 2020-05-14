@@ -57,14 +57,63 @@ x$Roots[x$Roots == 0] <- 0.01
 lX<-log(x[,c(11,14:19, 22, 28, 29)])
 colnames(lX)<-paste("log",colnames(lX),sep="")
 x<-cbind(x,lX); rm(lX)
+
+
 x0<-x[x$Depth=="(0-5)",]
+x0$Plot2<-rep("C",nrow(x0))
+x0$Plot2[x0$Treatment=="Nutrients"]<-"N"
+x0$Plot2[x0$Treatment=="Salt"]<-"S"
+x0$Plot2[x0$Treatment=="SN"]<-"B" ## B="Both"
+x0$ID<-paste(x0$Site,x0$Plot2,x0$Core,sep="")
+rownames(x0)<-x0$ID   ### create unique rownames for each core like, "1S1" etc.
+table(x0$Treatment,x0$Plot2)
 
 phys<-c("SM","LOI","BD","logRoots", "pH")
 chem<-c("logCl","logSO4","logNa","logK","logMg","Ca", "logNH4", "logNO3", "logPO4")
 
 
-x0 <- x0[, c("Cmin_c", "Site", "Treatment", "Depth", phys, chem)]
+x0 <- x0[, c("Cmin_c", "Site", "Plot2", "Depth", "Core", phys, chem)]
+x1 <- x0
+x1["5S2",1] <- 5.11
+x1$Site2<-factor(paste("S",x1$Site,sep=""))
+table(x1$Site2)
 
+x1$SbyP<-factor(paste(x1$Site2,x1$Plot2,sep=""))
+table(x1$SbyP)
+
+
+#' ## Nested progression of Variance Models
+#' ### First: assumes homoskedastic errors
+#' 
+gls.out0<-gls(Cmin_c~Site2+Plot2+SM+BD+logCl+logK,
+              data=x1)
+summary(gls.out0)
+plot(gls.out0)
+
+
+#' ## Variance Model 2
+#' ### Assumes soil moisture `SM` affects variance
+
+gls.out1<-gls(Cmin_c~Site2+Plot2+SM+BD+logCl+logK,
+              weights=varConstPower(form=~SM),
+              data=x1)
+summary(gls.out1)
+plot(gls.out1)
+
+
+#' ## Variance/Covariance Model
+#' ### Adds correlated within plot errors to model 2
+
+gls.out2<-gls(Cmin_c~Site2+Plot2+SM+BD+logCl+logK,
+              weights=varConstPower(form=~SM),
+              correlation=corAR1(0.25,form=~Core|SbyP),
+              data=x1)
+summary(gls.out2)
+plot(gls.out2)
+
+#' ## ANOVA
+
+anova(gls.out0,gls.out1,gls.out2)
 
 
 
