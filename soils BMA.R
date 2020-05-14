@@ -173,3 +173,11 @@ variable.names(p.PE2)
 
 
 ### there is a bit more in the tutorial but I don't understad it...
+
+
+
+
+
+
+#' ## Notes from the BAS vignette
+#' Include in the model: Marginal Posterior Inclusion Probabilities greater than 0.5
