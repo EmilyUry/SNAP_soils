@@ -31,11 +31,11 @@
 #'  
 #'  Here is an example of a nested progression of GLS models, the first assuming
 #'  homoskedastic errors, the second assuming an error variance that depends on the
-#'  variable **soil moisture** (`SM`) and the third adding correlated within-plot
+#'  variable **soil carbon** (`LOI`) and the third adding correlated within-plot
 #'  errors to the seconf model. 
 #'  An `ANOVA` test is used to assess the added explanatory value of each model over the 
 #'  previous one. Based on this analysis we find strong evidence for including an
-#'  error variance that depends on Moisture and evidence for the addition of correlated 
+#'  error variance that depends on soil carbon and but NOT for the addition of correlated 
 #'  within group errors. 
 #'  
 #'  We thank Edwin Iversen for help with the above notes and the following code. 
@@ -43,6 +43,8 @@
 #'  
 #' ## IID Error Model
 #'  
+
+library(nlme)
 
 setwd("C:/Users/eau6/Dropbox (Duke Bio_Ea)/My data/SNAP_compilation/SNAP_Carbon_Story")
 x <- read.csv("2019_SNAP_master.csv", header = TRUE)
@@ -72,7 +74,7 @@ phys<-c("SM","LOI","BD","logRoots", "pH")
 chem<-c("logCl","logSO4","logNa","logK","logMg","Ca", "logNH4", "logNO3", "logPO4")
 
 
-x0 <- x0[, c("Cmin_c", "Site", "Plot2", "Depth", "Core", phys, chem)]
+x0 <- x0[, c("Cmin_s", "Site", "Plot2", "Depth", "Core", phys, chem)]
 x1 <- x0
 x1["5S2",1] <- 5.11
 x1$Site2<-factor(paste("S",x1$Site,sep=""))
@@ -85,7 +87,7 @@ table(x1$SbyP)
 #' ## Nested progression of Variance Models
 #' ### First: assumes homoskedastic errors
 #' 
-gls.out0<-gls(Cmin_c~Site2+Plot2+SM+BD+logCl+logK,
+gls.out0<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
               data=x1)
 summary(gls.out0)
 plot(gls.out0)
@@ -94,8 +96,8 @@ plot(gls.out0)
 #' ## Variance Model 2
 #' ### Assumes soil moisture `SM` affects variance
 
-gls.out1<-gls(Cmin_c~Site2+Plot2+SM+BD+logCl+logK,
-              weights=varConstPower(form=~SM),
+gls.out1<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+              weights=varConstPower(form=~LOI),
               data=x1)
 summary(gls.out1)
 plot(gls.out1)
@@ -104,16 +106,26 @@ plot(gls.out1)
 #' ## Variance/Covariance Model
 #' ### Adds correlated within plot errors to model 2
 
-gls.out2<-gls(Cmin_c~Site2+Plot2+SM+BD+logCl+logK,
-              weights=varConstPower(form=~SM),
+gls.out2<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+              weights=varConstPower(form=~LOI),
               correlation=corAR1(0.25,form=~Core|SbyP),
               data=x1)
 summary(gls.out2)
 plot(gls.out2)
 
 #' ## ANOVA
+anova(gls.out0, gls.out1, gls.out2)
 
-anova(gls.out0,gls.out1,gls.out2)
+
+
+gls.out2<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+              correlation=corAR1(0.25,form=~Core|SbyP),
+              data=x1)
+gls.out3<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+              weights=varConstPower(form=~LOI),
+              correlation=corAR1(0.25,form=~Core|SbyP),
+              data=x1)
+anova(gls.out0, gls.out2, gls.out3)
 
 
 
