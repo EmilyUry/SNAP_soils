@@ -74,9 +74,9 @@ phys<-c("SM","LOI","BD","logRoots", "pH")
 chem<-c("logCl","logSO4","logNa","logK","logMg","Ca", "logNH4", "logNO3", "logPO4")
 
 
-x0 <- x0[, c("Cmin_s", "Site", "Plot2", "Depth", "Core", phys, chem)]
+x0 <- x0[, c("Cmin_s", "Site", "Plot2", "Core", phys, chem)]
 x1 <- x0
-x1["5S2",1] <- 5.11
+x1["5S2",1] <- 0.61375   #5.11 for Cmin_c
 x1$Site2<-factor(paste("S",x1$Site,sep=""))
 table(x1$Site2)
 
@@ -87,16 +87,16 @@ table(x1$SbyP)
 #' ## Nested progression of Variance Models
 #' ### First: assumes homoskedastic errors
 #' 
-gls.out0<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+gls.out0<-gls(Cmin_s~Site2+BD+LOI+logCl+logK+logMg+logPO4,
               data=x1)
 summary(gls.out0)
 plot(gls.out0)
 
 
 #' ## Variance Model 2
-#' ### Assumes soil moisture `SM` affects variance
+#' ### Assumes soil moisture `LOI` affects variance
 
-gls.out1<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+gls.out1<-gls(Cmin_s~Site2+BD+LOI+logCl+logK+logMg+logPO4,
               weights=varConstPower(form=~LOI),
               data=x1)
 summary(gls.out1)
@@ -104,29 +104,28 @@ plot(gls.out1)
 
 
 #' ## Variance/Covariance Model
-#' ### Adds correlated within plot errors to model 2
+#' ### with correlated within plot errors
 
-gls.out2<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
-              weights=varConstPower(form=~LOI),
+gls.out2<-gls(Cmin_s~Site2+BD+LOI+logCl+logK+logMg+logPO4,
               correlation=corAR1(0.25,form=~Core|SbyP),
               data=x1)
+
 summary(gls.out2)
 plot(gls.out2)
 
-#' ## ANOVA
-anova(gls.out0, gls.out1, gls.out2)
-
-
-
-gls.out2<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
-              correlation=corAR1(0.25,form=~Core|SbyP),
-              data=x1)
-gls.out3<-gls(Cmin_s~Site2+Plot2+SM+BD+LOI+pH+logCl+Ca+logNO3+logPO4+logNH4,
+gls.out3<-gls(Cmin_s~Site2+BD+LOI+logCl+logK+logMg+logPO4,
               weights=varConstPower(form=~LOI),
               correlation=corAR1(0.25,form=~Core|SbyP),
               data=x1)
-anova(gls.out0, gls.out2, gls.out3)
+summary(gls.out3)
+plot(gls.out3)
+
+#' ## ANOVA
+anova(gls.out0, gls.out1, gls.out2, gls.out3)
+anova(gls.out0, gls.out2,gls.out1, gls.out3)
 
 
+#' To me, this says use model gls.out1 (with LOI as constant)
 
+gls.out1
 
