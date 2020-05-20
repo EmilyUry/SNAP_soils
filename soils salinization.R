@@ -68,13 +68,16 @@ ion.mEq <- IOeq * 0.0186 ## amount of each ion added to each gram of soil is the
                          ## amount of each ion in each gram of IO * grams of IO added
                          ## to each gram of soil 
 ion.uEq <- ion.mEq *1000
-#' Cl = 0.277  mEq/g
-#' SO4 = 0.0245
-#' Na = 0.245
-#' K = 0.00501
-#' Mg = 0.0560
-#' Ca = 0.0100
+ion.uEq
 
+#' Cl = 277  mEq/g
+#' SO4 = 24.4
+#' Na = 245.5
+#' K = 5
+#' Mg = 56
+#' Ca = 10
+sum(ion.uEq[3:6])
+#' TIC = 316.5
 
 ions <- (data[,c(14:19)])/Eq/100*1000 ### mg/L --> mEq/L  /100 --> uEq/g 
 colnames(ions)<-paste(colnames(ions), "_uEq_g", sep="")
@@ -94,3 +97,67 @@ cdata <- ddply(data, c("Site", "Treatment", "Depth"), summarise,  ## also includ
                sd   = sd(Mg.rec),
                se   = sd / sqrt(N))
 cdata
+
+### formula for calculating CEC https://ohioline.osu.edu/factsheet/anr-81
+### see also: https://www.extension.purdue.edu/extmedia/ay/ay-238.html
+data$CEC <- 12*(7-data$pH) + (data$Na_uEq_g + data$Ca_uEq_g + data$K_uEq_g + data$Mg_uEq_g)/10
+data$TCC <- (data$Na_uEq_g + data$Ca_uEq_g + data$K_uEq_g + data$Mg_uEq_g)
+plot(data$TCC, data$CEC)
+
+
+
+
+#####################
+## money Figure
+#####################
+
+
+
+x <- data[which(data$Treatment == "Salt" | data$Treatment == "Control"),]
+##x <- x[which(x$Depth == "(0-5)"),]
+
+#xp <- c(1,1,1,1,1,2,2,2,2,2,4,4,4,4,4,5,5,5,5,5,7,7,7,7,7,8,8,8,8,8)
+xp <- c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,
+        7,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8,8)
+x$xp <- xp
+x$Depth <- as.factor(x$Depth)
+x$Treatment <- as.factor(x$Treatment)
+
+col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
+col3l <- c("#f4a582", "black", "#C2A5CF", "black", "#92C5DE") ## light
+col3d <- c("#b2182b", "black", "#762A83","black", "#2166AC") ## dark
+
+
+par(mfrow = c(1,3), mar = c(12,4,12,1), cex = 0.9)
+
+plot(x$xp, x$Cl_uEq_g, xaxt = "n", xlim = c(0.5, 8.5), pch = c(21,24)[x$Treatment], cex = 1,
+     col = col3d[x$Site], bg = ifelse(x$Depth == "(5-10)", col3l[x$Site], col3d[x$Site]),
+     ylab = "[Cl-] (uEq/g)", xlab = " ", 
+     main = "Chloride \nAmount added = 138 uEq/g")
+axis(1, at = c(1,2,4,5,7,8), labels = c("Salt", "Control", "Salt", "Control", "Salt", "Control"), las = 2)
+axis(3, at = c(1.5, 4.5, 7.5), labels = c("Site 1", "Site 3", "Site 5"), tick = FALSE, font = 2, cex = 2)
+abline(v = 3)
+abline(v = 6)
+
+
+plot(x$xp, x$SO4_uEq_g, xaxt = "n", xlim = c(0.5, 8.5), pch = c(21,24)[x$Treatment], cex = 1,
+     col = col3d[x$Site], bg = ifelse(x$Depth == "(5-10)", col3l[x$Site], col3d[x$Site]),
+     ylab = "[SO4] (uEq/g)", xlab = " ", 
+     main = "Sulfate\nAmount added = 12.2 uEq/g")
+
+mtext("Ions recovered in the top 10 cm", 3, 8, font = 3, cex = 1.1)
+
+axis(1, at = c(1,2,4,5,7,8), labels = c("Salt", "Control", "Salt", "Control", "Salt", "Control"), las = 2)
+axis(3, at = c(1.5, 4.5, 7.5), labels = c("Site 1", "Site 3", "Site 5"), tick = FALSE, font = 2, cex = 2)
+abline(v = 3)
+abline(v = 6)
+
+plot(x$xp, x$TCC, xaxt = "n", xlim = c(0.5, 8.5), pch = c(21,24)[x$Treatment], cex = 1,
+     col = col3d[x$Site], bg = ifelse(x$Depth == "(5-10)", col3l[x$Site], col3d[x$Site]),
+     ylab = "[Na + K + Ca + Mg] (uEq/g)", xlab = " ", 
+     main = "Base Cations\nAmount added = 158 uEq/g")
+axis(1, at = c(1,2,4,5,7,8), labels = c("Salt", "Control", "Salt", "Control", "Salt", "Control"), las = 2)
+axis(3, at = c(1.5, 4.5, 7.5), labels = c("Site 1", "Site 3", "Site 5"), tick = FALSE, font = 2, cex = 2)
+abline(v = 3)
+abline(v = 6)
+
