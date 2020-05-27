@@ -275,7 +275,7 @@ abline(v = 6.5)
 abline(v = 13.5)
 
 
-plot(xp, x$pH, xaxt = "n", xlim = c(0, 20), pch = c("o","+")[x$Treatment], cex = 1,
+plot(xp, x$K, xaxt = "n", xlim = c(0, 20), pch = c("o","+")[x$Treatment], cex = 1,
      col = c("gray30", "gray70")[x$Depth],
      ylab = "pH", xlab = " ", 
      main = "pH")
