@@ -45,37 +45,37 @@ null <- lmer(DOC ~  1 + (1 + Treatment|Site), data = x, REML = F)
 anova(null, model1)
 
 ## When using the untransformed variables - the model is significantly different from the null
-model2 <- lmer(DOC ~ Cl + SO4 + pH + (1|Site), data = x, REML = F)
+model2 <- lmer((DOC) ~ (Cl) + (SO4) + (pH) + (1|Site), data = x, REML = F)
 summary(model2)
-null2 <- lmer(DOC ~ 1 + (1|Site), data = x, REML = F)
+null2 <- lmer((DOC) ~ 1 + (1|Site), data = x, REML = F)
 anova(null2, model2)
 
 ## when using the log transformed variables, the significance goes away :(
-model2 <- lmer(DOC ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
+model2 <- lmer((DOC) ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
 summary(model2)
-null2 <- lmer(DOC ~ 1 + (1|Site), data = x, REML = F)
+null2 <- lmer((DOC) ~ 1 + (1|Site), data = x, REML = F)
 
 anova(null2, model2)
 
 ## when using the log transformed variables and scaling them ... no difference
-model2 <- lmer(DOC ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+model2 <- lmer(scale(DOC) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
 summary(model2)
-null2 <- lmer(DOC ~ 1 + (1|Site), data = x, REML = F)
+null2 <- lmer(scale(DOC) ~ 1 + (1|Site), data = x, REML = F)
 anova(null2, model2)
 
 
 ## try dropping out the variables
-model2 <- lmer(DOC ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+model2 <- lmer(scale(DOC) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
 
-model2a <- lmer(DOC ~ scale(logCl) + scale(logSO4) + (1|Site), data = x, REML = F)
-model2b <- lmer(DOC ~ scale(logCl) + scale(pH) + (1|Site), data = x, REML = F)
-model2c <- lmer(DOC ~ scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
-model2d <- lmer(DOC ~ scale(logCl) + (1|Site), data = x, REML = F)
-model2e <- lmer(DOC ~ scale(pH) + (1|Site), data = x, REML = F)
-model2f <- lmer(DOC ~ scale(logSO4) + (1|Site), data = x, REML = F)
+model2a <- lmer(scale(DOC) ~ scale(logCl) + scale(logSO4) + (1|Site), data = x, REML = F)
+model2b <- lmer(scale(DOC) ~ scale(logCl) + scale(pH) + (1|Site), data = x, REML = F)
+model2c <- lmer(scale(DOC) ~ scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+model2d <- lmer(scale(DOC) ~ scale(logCl) + (1|Site), data = x, REML = F)
+model2e <- lmer(scale(DOC) ~ scale(pH) + (1|Site), data = x, REML = F)
+model2f <- lmer(scale(DOC) ~ scale(logSO4) + (1|Site), data = x, REML = F)
 
 
-null2 <- lmer(DOC ~ 1 + (1|Site), data = x, REML = F)
+null2 <- lmer(scale(DOC) ~ 1 + (1|Site), data = x, REML = F)
 anova(null2, model2)
 anova(null2, model2a)
 anova(null2, model2b)
@@ -90,8 +90,8 @@ anova(null2, model2f)
 
 
 # try adding a random slope to the full model
-model2 <- lmer(DOC ~ scale(logCl) + (1 + scale(logCl)|Site), data = x, REML = F)
-null2 <- lmer(DOC ~ 1 + (1 + scale(logCl)|Site), data = x, REML = F)
+model2 <- lmer(scale(DOC) ~ scale(logCl) + (1 + scale(logCl)|Site), data = x, REML = F)
+null2 <- lmer(scale(DOC) ~ 1 + (1 + scale(logCl)|Site), data = x, REML = F)
 
 anova(null2, model2)
 
