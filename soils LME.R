@@ -34,6 +34,7 @@ col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
 par(mfrow = c(1,1), mar = c(4,4,3,3))
 boxplot(DOC ~ Treatment*Site, data = x)
 plot(x$logSO4, x$DOC, pch = c(21,22)[x$Treatment], col = col3[x$Site], bg = ifelse(x$Depth == "(5-10)", "white", col3[x$Site]))
+boxplot(pH ~ Treatment*Site, data = x)
 
 
 ### model [DOC] by treatment and depth with Site and ID as a Random Effect
