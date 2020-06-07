@@ -36,13 +36,19 @@ col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
 par(mfrow = c(1,1), mar = c(4,4,3,3))
 boxplot(DOC ~ Treatment*Site, data = x)
 plot(x$logSO4, x$DOC, pch = c(21,22)[x$Treatment], col = col3[x$Site], bg = ifelse(x$Depth == "(5-10)", "white", col3[x$Site]))
-boxplot(pH ~ Treatment*Site, data = x)
+
+x <- x[which(x$Depth == "(0-5)"),]
+
 
 x$Response <- x$DOC
 x$Response <- x$LOI
 x$Response <- x$Phenol
 x$Response <- x$Cmin_s
 x$Response <- x$SIR_s
+
+
+boxplot(Response ~ Treatment*Site, data = x)
+plot(x$Cl, x$Response, pch = c(22), col = col3[x$Site], bg = ifelse(x$Treatment == "Control", "white", col3[x$Site]))
 
 
 ## Using treatment as a categorical predictor
@@ -78,16 +84,47 @@ model4d <- lmer(scale(Response) ~ scale(logCl) + (1|Site), data = x, REML = F)
 model4e <- lmer(scale(Response) ~ scale(pH) + (1|Site), data = x, REML = F)
 model4f <- lmer(scale(Response) ~ scale(logSO4) + (1|Site), data = x, REML = F)
 
-anova(null4, model4a)
-anova(null4, model4b)
-anova(null4, model4c)
-anova(null4, model4d)
-anova(null4, model4e)
-anova(null4, model4f)
+anova(null4, model4)  # full
+
+anova(null4, model4a)  # drop pH
+anova(null4, model4b)  # drop SO4
+anova(null4, model4c)  # drop Cl
+anova(null4, model4d)  # Cl alone
+anova(null4, model4e)  # ph alone
+anova(null4, model4f)  # SO4 alone
+
+anova(model4, model4a)
+
+
+model4d <- lmer(Response ~ logCl + (1+ logCl|Site), data = x, REML = F)
+null4d <- lmer(Response ~ 1 + (1+ logCl|Site), data = x, REML = F)
+anova(null4d, model4d)  # Cl alone
 
 
 
 
+## when adding a random slope
+model5 <- lmer((Response) ~ logCl + logSO4 + pH + (1+ logCl|Site) + (1+ logSO4|Site), data = x, REML = F)
+summary(model5)
+null5 <- lmer((Response) ~ 1 + (1 + logCl|Site) + (1+ logSO4|Site), data = x, REML = F)
+anova(null5, model5)
 
 
+
+
+## Using LOI as a predictor
+## Using treatment as a categorical predictor
+model1 <- lmer(Response ~ Treatment + LOI + (1 + Treatment|Site) , data = x, REML = F)
+null <- lmer(Response ~  LOI + (1 + Treatment|Site), data = x, REML = F)
+anova(null, model1)
+
+## When using the untransformed variables
+model2 <- lmer((Response) ~ (Cl) + (SO4) + (pH) + LOI + (1|Site), data = x, REML = F)
+null2 <- lmer((Response) ~ LOI + (1|Site), data = x, REML = F)
+anova(null2, model2)
+
+## when using the log transformed variables
+model3 <- lmer((Response) ~ logCl + logSO4 + pH + LOI + (1|Site), data = x, REML = F)
+null3 <- lmer((Response) ~ LOI + (1|Site), data = x, REML = F)
+anova(null3, model3)
 
