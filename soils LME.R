@@ -10,6 +10,8 @@
 #' 
 #' 
 
+library(lme4)
+
 setwd("C:/Users/eau6/Dropbox (Duke Bio_Ea)/My data/SNAP_compilation/SNAP_Carbon_Story")
 x <- read.csv("2019_SNAP_master.csv", header = TRUE)
 names(x) <- c("Date","Site", "Treatment", "Core", "Depth", "Cond", "BD", 
@@ -36,63 +38,56 @@ boxplot(DOC ~ Treatment*Site, data = x)
 plot(x$logSO4, x$DOC, pch = c(21,22)[x$Treatment], col = col3[x$Site], bg = ifelse(x$Depth == "(5-10)", "white", col3[x$Site]))
 boxplot(pH ~ Treatment*Site, data = x)
 
+x$Response <- x$DOC
+x$Response <- x$LOI
+x$Response <- x$Phenol
+x$Response <- x$Cmin_s
+x$Response <- x$SIR_s
 
 
-
-## Using treatment as a categorical predictor... no significance
-model1 <- lmer(DOC ~ Treatment + (1 + Treatment|Site) , data = x, REML = F)
-null <- lmer(DOC ~  1 + (1 + Treatment|Site), data = x, REML = F)
+## Using treatment as a categorical predictor
+model1 <- lmer(Response ~ Treatment + (1 + Treatment|Site) , data = x, REML = F)
+null <- lmer(Response ~  1 + (1 + Treatment|Site), data = x, REML = F)
 anova(null, model1)
 
-## When using the untransformed variables - the model is significantly different from the null
-model2 <- lmer((DOC) ~ (Cl) + (SO4) + (pH) + (1|Site), data = x, REML = F)
+## When using the untransformed variables
+model2 <- lmer((Response) ~ (Cl) + (SO4) + (pH) + (1|Site), data = x, REML = F)
 summary(model2)
-null2 <- lmer((DOC) ~ 1 + (1|Site), data = x, REML = F)
+null2 <- lmer((Response) ~ 1 + (1|Site), data = x, REML = F)
 anova(null2, model2)
 
-## when using the log transformed variables, the significance goes away :(
-model2 <- lmer((DOC) ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
-summary(model2)
-null2 <- lmer((DOC) ~ 1 + (1|Site), data = x, REML = F)
+## when using the log transformed variables
+model3 <- lmer((Response) ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
+summary(model3)
+null3 <- lmer((Response) ~ 1 + (1|Site), data = x, REML = F)
 
-anova(null2, model2)
+anova(null3, model3)
 
-## when using the log transformed variables and scaling them ... no difference
-model2 <- lmer(scale(DOC) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
-summary(model2)
-null2 <- lmer(scale(DOC) ~ 1 + (1|Site), data = x, REML = F)
-anova(null2, model2)
+## when using the log transformed variables and scaling them
+model4 <- lmer(scale(Response) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+summary(model4)
+null4 <- lmer(scale(Response) ~ 1 + (1|Site), data = x, REML = F)
+anova(null4, model4)
 
 
 ## try dropping out the variables
-model2 <- lmer(scale(DOC) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+model4a <- lmer(scale(Response) ~ scale(logCl) + scale(logSO4) + (1|Site), data = x, REML = F)
+model4b <- lmer(scale(Response) ~ scale(logCl) + scale(pH) + (1|Site), data = x, REML = F)
+model4c <- lmer(scale(Response) ~ scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+model4d <- lmer(scale(Response) ~ scale(logCl) + (1|Site), data = x, REML = F)
+model4e <- lmer(scale(Response) ~ scale(pH) + (1|Site), data = x, REML = F)
+model4f <- lmer(scale(Response) ~ scale(logSO4) + (1|Site), data = x, REML = F)
 
-model2a <- lmer(scale(DOC) ~ scale(logCl) + scale(logSO4) + (1|Site), data = x, REML = F)
-model2b <- lmer(scale(DOC) ~ scale(logCl) + scale(pH) + (1|Site), data = x, REML = F)
-model2c <- lmer(scale(DOC) ~ scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
-model2d <- lmer(scale(DOC) ~ scale(logCl) + (1|Site), data = x, REML = F)
-model2e <- lmer(scale(DOC) ~ scale(pH) + (1|Site), data = x, REML = F)
-model2f <- lmer(scale(DOC) ~ scale(logSO4) + (1|Site), data = x, REML = F)
-
-
-null2 <- lmer(scale(DOC) ~ 1 + (1|Site), data = x, REML = F)
-anova(null2, model2)
-anova(null2, model2a)
-anova(null2, model2b)
-anova(null2, model2c)
-anova(null2, model2d)
-anova(null2, model2e)
-anova(null2, model2f)
-
-### NOTHING IS SIGNIFICANT
+anova(null4, model4a)
+anova(null4, model4b)
+anova(null4, model4c)
+anova(null4, model4d)
+anova(null4, model4e)
+anova(null4, model4f)
 
 
 
 
-# try adding a random slope to the full model
-model2 <- lmer(scale(DOC) ~ scale(logCl) + (1 + scale(logCl)|Site), data = x, REML = F)
-null2 <- lmer(scale(DOC) ~ 1 + (1 + scale(logCl)|Site), data = x, REML = F)
 
-anova(null2, model2)
 
 
