@@ -128,3 +128,9 @@ model3 <- lmer((Response) ~ logCl + logSO4 + pH + LOI + (1|Site), data = x, REML
 null3 <- lmer((Response) ~ LOI + (1|Site), data = x, REML = F)
 anova(null3, model3)
 
+
+## when using the log transformed variables
+model3 <- lmer((Response) ~ logCl + LOI + (1|Site), data = x, REML = F)
+null3 <- lmer((Response) ~ LOI + (1|Site), data = x, REML = F)
+anova(null3, model3)
+
