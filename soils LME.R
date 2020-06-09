@@ -83,7 +83,7 @@ model4c <- lmer(scale(Response) ~ scale(logSO4) + scale(pH) + (1|Site), data = x
 model4d <- lmer(scale(Response) ~ scale(logCl) + (1|Site), data = x, REML = F)
 model4e <- lmer(scale(Response) ~ scale(pH) + (1|Site), data = x, REML = F)
 model4f <- lmer(scale(Response) ~ scale(logSO4) + (1|Site), data = x, REML = F)
-
+summary(model4e)
 anova(null4, model4)  # full
 
 anova(null4, model4a)  # drop pH
