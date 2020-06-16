@@ -6,3 +6,58 @@
 #' output: github_document
 #' ---
 #'
+
+
+setwd("C:/Users/eau6/Dropbox (Duke Bio_Ea)/My data/SNAP_compilation/SNAP_Carbon_Story")
+
+x <-  read.csv("2019_SIR_salt_w_eplainers.csv")
+
+
+x$ID<-paste(x$Site,x$Plot,x$Rep,sep="")
+
+
+Response <- x$µg_C_CO2_hr_gC
+Response <- x$µg_C_CO2_hr_gds
+
+x$Treatment <-replace(x$Treatment, c(1:30), "a_zero")
+x$Treatment <-replace(x$Treatment, c(31:60), "b_two")
+x$Treatment <- replace(x$Treatment, c(61:90), "c_six")
+
+
+par(mar = c(7,5,2,2))
+boxplot(Response ~ Treatment*Plot*Site, data = x, las = 2, 
+        col = c("#f4a582","#f4a582","#f4a582", "#d6604d", "#d6604d","#d6604d",
+                "#C2A5CF", "#C2A5CF", "#C2A5CF", "#9970AB","#9970AB","#9970AB",
+                "#92C5DE","#92C5DE","#92C5DE",  "#4393C3",  "#4393C3",  "#4393C3" ))
+
+
+model1 <- lmer(Response ~ Treatment + (1|Site) + (1|Plot) + (1|ID) , data = x, REML = F)
+null <- lmer(Response ~  1 + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
+anova(null, model1) 
+
+summary(model1)
+
+
+
+
+
+
+
+## When using the untransformed variables
+model2 <- lmer((Response) ~ (Cl) + (SO4) + (pH) + (1|Site), data = x, REML = F)
+summary(model2)
+null2 <- lmer((Response) ~ 1 + (1|Site), data = x, REML = F)
+anova(null2, model2)
+
+## when using the log transformed variables
+model3 <- lmer((Response) ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
+summary(model3)
+null3 <- lmer((Response) ~ 1 + (1|Site), data = x, REML = F)
+
+anova(null3, model3)
+
+## when using the log transformed variables and scaling them
+model4 <- lmer(scale(Response) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
+summary(model4)
+null4 <- lmer(scale(Response) ~ 1 + (1|Site), data = x, REML = F)
+anova(null4, model4)
