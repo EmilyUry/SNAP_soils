@@ -87,3 +87,16 @@ anova(null4, model4e)  # ph alone
 anova(null4, model4f)  # SO4 alone
 
 anova(model4, model4e)
+
+
+
+
+
+
+#### model 5 -- random slopes
+## when using the log transformed variables
+model5<- lmer((Response) ~  Treatment + (1+Treatment|Site) + (1|Plot) + (1|ID), data = x, REML = F)
+summary(model5)
+null5 <- lmer((Response) ~ 1 +  (1+Treatment|Site) + (1|Plot) + (1|ID), data = x, REML = F)
+
+anova(null5, model5)
