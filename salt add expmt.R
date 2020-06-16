@@ -44,20 +44,46 @@ summary(model1)
 
 
 ## When using the untransformed variables
-model2 <- lmer((Response) ~ (Cl) + (SO4) + (pH) + (1|Site), data = x, REML = F)
+model2 <- lmer((Response) ~ (Cl) + (SO4) + (pH) + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
 summary(model2)
-null2 <- lmer((Response) ~ 1 + (1|Site), data = x, REML = F)
+null2 <- lmer((Response) ~ 1 + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
 anova(null2, model2)
 
+
+
+
+
+
 ## when using the log transformed variables
-model3 <- lmer((Response) ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
+model3 <- lmer((Response) ~ logCl + logSO4 + pH + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
 summary(model3)
-null3 <- lmer((Response) ~ 1 + (1|Site), data = x, REML = F)
+null3 <- lmer((Response) ~ 1 + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
 
 anova(null3, model3)
 
-## when using the log transformed variables and scaling them
-model4 <- lmer(scale(Response) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site), data = x, REML = F)
-summary(model4)
-null4 <- lmer(scale(Response) ~ 1 + (1|Site), data = x, REML = F)
-anova(null4, model4)
+
+
+
+
+
+## try dropping out the variables
+model4a <- lmer(scale(Response) ~ scale(logCl) + scale(logSO4) + (1|Site)+ (1|Plot) + (1|ID), data = x, REML = F)
+model4b <- lmer(scale(Response) ~ scale(logCl) + scale(pH) + (1|Site)+ (1|Plot) + (1|ID), data = x, REML = F)
+model4c <- lmer(scale(Response) ~ scale(logSO4) + scale(pH) + (1|Site)+ (1|Plot) + (1|ID), data = x, REML = F)
+model4d <- lmer(scale(Response) ~ scale(logCl) + (1|Site)+ (1|Plot) + (1|ID), data = x, REML = F)
+model4e <- lmer(scale(Response) ~ scale(pH) + (1|Site)+ (1|Plot) + (1|ID), data = x, REML = F)
+model4f <- lmer(scale(Response) ~ scale(logSO4) + (1|Site)+ (1|Plot) + (1|ID), data = x, REML = F)
+summary(model4e)
+null4 <- lmer(scale(Response) ~ 1 + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
+model4 <- lmer(scale(Response) ~ scale(logCl) + scale(logSO4) + scale(pH) + (1|Site) + (1|Plot) + (1|ID), data = x, REML = F)
+
+anova(null4, model4)  # full
+
+anova(null4, model4a)  # drop pH
+anova(null4, model4b)  # drop SO4
+anova(null4, model4c)  # drop Cl
+anova(null4, model4d)  # Cl alone
+anova(null4, model4e)  # ph alone
+anova(null4, model4f)  # SO4 alone
+
+anova(model4, model4e)
