@@ -39,6 +39,8 @@ par(mfrow = c(1,1), mar = c(4,4,3,3))
 boxplot(DOC ~ Treatment*Site, data = x)
 plot(x$logSO4, x$DOC, pch = c(21,22)[x$Treatment], col = col3[x$Site], bg = ifelse(x$Depth == "(5-10)", "white", col3[x$Site]))
 
+
+## and also ignore the shallow depth
 x <- x[which(x$Depth == "(0-5)"),]
 
 
@@ -49,3 +51,16 @@ x$Response <- x$Cmin_s
 x$Response <- x$SIR_s
 
 
+##nlme package can't deal with missing values (this is one way it differs from lme4),
+## so we must run an na.omit
+
+x <- na.omit(x)
+
+null1 <- lme(fixed = Response ~ 1,   #defines the fixed effect, in this case none only the intercept
+    data = x,
+    random = ~ 1 | Site) 
+
+model1 <- lme(fixed = Response ~ Treatment,   #defines the fixed effect, in this case none only the intercept
+              data = x,
+              random = ~ 1 | Site) 
+summary(null1)
