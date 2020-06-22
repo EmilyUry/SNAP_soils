@@ -44,6 +44,13 @@ plot(x$logSO4, x$DOC, pch = c(21,22)[x$Treatment], col = col3[x$Site], bg = ifel
 x <- x[which(x$Depth == "(0-5)"),]
 
 
+##nlme package can't deal with missing values (this is one way it differs from lme4),
+## so we must run an na.omit
+
+#x <- na.omit(x)
+x <- x[-22,]
+
+
 x$Response <- x$DOC
 x$Response <- x$LOI
 x$Response <- x$Phenol
@@ -51,16 +58,20 @@ x$Response <- x$Cmin_s
 x$Response <- x$SIR_s
 
 
-##nlme package can't deal with missing values (this is one way it differs from lme4),
-## so we must run an na.omit
 
-x <- na.omit(x)
 
-null1 <- lme(fixed = Response ~ 1,   #defines the fixed effect, in this case none only the intercept
+null1 <- nlme::lme(fixed = Response ~ 1,   #defines the fixed effect, in this case none only the intercept
     data = x,
     random = ~ 1 | Site) 
 
-model1 <- lme(fixed = Response ~ Treatment,   #defines the fixed effect, in this case none only the intercept
+model1 <- nlme::lme(fixed = Response ~ Treatment,   #defines the fixed effect, in this case none only the intercept
               data = x,
               random = ~ 1 | Site) 
 summary(null1)
+
+anova(null1, model1)
+
+nupp1 <- lme4::lmer(Response ~  1 + (1|Site), data = x, REML = F)
+
+null1
+nupp1
