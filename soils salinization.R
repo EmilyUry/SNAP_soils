@@ -130,7 +130,7 @@ col3l <- c("#f4a582", "black", "#C2A5CF", "black", "#92C5DE") ## light
 col3d <- c("#b2182b", "black", "#762A83","black", "#2166AC") ## dark
 
 
-par(mfrow = c(1,3), mar = c(12,4,12,1), cex = 0.9)
+par(mfrow = c(1,3), mar = c(4,4,4,1), cex = 0.9)
 
 plot(x$xp, x$Cl_uEq_g, xaxt = "n", xlim = c(0.5, 8.5), pch = c(21,24)[x$Treatment], cex = 1,
      col = col3d[x$Site], bg = ifelse(x$Depth == "(5-10)", col3l[x$Site], col3d[x$Site]),
@@ -466,7 +466,7 @@ axis(1, at = c(1,2,4,5,7,8), labels = c("(0-5) cm", "(5-10) cm", "(0-5) cm", "(5
 axis(3, at = c(1.5, 4.5, 7.5), labels = c("Site 1", "Site 3", "Site 5"), line = -1, tick = FALSE, font = 2, cex = 2)
 abline(v = 3, col = "lightblue")
 abline(v = 6, col = "lightblue")
-arrows(xxp, df[,i]+df[,i+1], xxp, df[,i]-df[,i+1], angle = 90, length = 0.01, code = 3)}
+arrows(xxp, df[,i]+df[,i+1]/2.2, xxp, df[,i]-df[,i+1]/2.2, angle = 90, length = 0.01, code = 3)}
 
 
 ##### Here is the percent RECOVERY
@@ -486,7 +486,7 @@ for(i in seq){
   abline(v = 3, col = "gray80")
   abline(v = 6, col = "gray80")
   abline(h = 0, lty = 2, col = "red")
-  arrows(xxp, (df[,i]+df[,i+1])/rec[i]*100, xxp, (df[,i]-df[,i+1])/rec[i]*100, angle = 90, length = 0.01, code = 3)}
+  arrows(xxp, (df[,i]+df[,i+1]/2.2)/rec[i]*100, xxp, (df[,i]-df[,i+1]/2.2)/rec[i]*100, angle = 90, length = 0.01, code = 3)}
 
 
 
