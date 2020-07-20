@@ -1,6 +1,12 @@
 
 ### SNAP Figures for ESA2020
 
+## soil c 
+## DOC and CMIN
+
+## veg
+### plant growth and root biomass
+
 
 
 setwd("C:/Users/uryem/Dropbox (Duke Bio_Ea)/My data/SNAP_compilation/SNAP_Carbon_Story")
@@ -48,6 +54,32 @@ response <- x$Cmin_s
 boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill, 
         ylab = "Respiration (ug C-CO2 / g dry soil)", 
         xlab = NULL, xaxt = 'n')
+abline(v=2.5)
+abline(v=4.5)
+
+
+###### PLANTS
+
+
+
+data <- read.csv("TL_tree_DBH.csv", header = T)
+names(data) <- c("Site", "Plot", "Treatment", "Species", "Tag", "D15", "D16", "D17", "D18", "D19")
+data <- data[which(data$Treatment == "S" | data$Treatment == "C"),]
+
+data$growth <- data$D19 - data$D15
+boxplot(growth ~ Treatment*Site, data = data, border = col, col = col.fill, 
+        ylab = "Tree growth (DBH cm)", 
+        xlab = NULL)
+abline(v=2.5)
+abline(v=4.5)
+
+
+
+
+response <- x$Roots
+boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill, 
+        ylab = "Root biomass (g)", 
+        xlab = NULL)
 abline(v=2.5)
 abline(v=4.5)
 
