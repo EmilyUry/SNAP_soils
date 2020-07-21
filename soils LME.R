@@ -56,6 +56,12 @@ model1 <- lmer(Response ~ Treatment + (1 + Treatment|Site) , data = x, REML = F)
 null <- lmer(Response ~  1 + (1 + Treatment|Site), data = x, REML = F)
 anova(null, model1)
 
+## Using treatment as a categorical predictor
+model1 <- lmer(Response ~ Treatment + (1|Site) , data = x, REML = F)
+null <- lmer(Response ~  1 + (1|Site), data = x, REML = F)
+anova(null, model1)
+summary(model1)
+
 ## When using the untransformed variables
 model2 <- lmer((Response) ~ (Cl) + (SO4) + (pH) + (1|Site), data = x, REML = F)
 summary(model2)
