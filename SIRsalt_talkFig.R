@@ -89,8 +89,8 @@ plot(Control$Treatment, Control$mean_resp,
      ylim = c(3, 8.5))
 
 
-arrows(treatment, (Control$mean_resp+Control$sd_resp/1), treatment,
-       (Control$mean_resp-Control$sd_resp/1), length = 0.05, angle = 90, code = 3, 
+arrows(treatment, (Control$mean_resp+Control$sd_resp/2.3), treatment,
+       (Control$mean_resp-Control$sd_resp/2.3), length = 0.05, angle = 90, code = 3, 
        col = "gray60")
 
 treatment <- c(0,2,6)
@@ -114,8 +114,8 @@ plot(Salt$Treatment, Salt$mean_resp,
      cex = 1.5, 
      ylim = c(3, 8.5))
 
-arrows(treatment, (Salt$mean_resp+Salt$sd_resp/1), treatment,
-       (Salt$mean_resp-Salt$sd_resp/1), length = 0.05, angle = 90, code = 3, 
+arrows(treatment, (Salt$mean_resp+Salt$sd_resp/2.3), treatment,
+       (Salt$mean_resp-Salt$sd_resp/2.3), length = 0.05, angle = 90, code = 3, 
        col = "gray60")
 
 S1 <- Salt[which(Salt$Site == 1),]
