@@ -81,7 +81,7 @@ treatment <- c(0, 2, 6, 0, 2, 6, 0, 2, 6)
 par(mfrow = c(1,2), mar = c(5,5,2,1))
 plot(Control$Treatment, Control$mean_resp, 
      xlab = "Salinity Treatment (ppt)",
-     ylab = "Respiration (ug C-CO2/g dry soil)", 
+     ylab = "Respiration (ug C-CO2/g dry soil/hour)", 
      main = "Control Plot", 
      pch = 15,
      col = col[Control$Site],
