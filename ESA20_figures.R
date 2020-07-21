@@ -85,5 +85,90 @@ abline(v=4.5)
 
 
 
+##### edphic factors pca
+
+
+c <- x[which(x$Treatment == "Control"),]
+
+col <- c("red", "black", "purple", "black", "blue") 
+
+par(mfrow = c(1,2), mar = c(5,5,3,3))
+
+plot(c$Cl, c$SO4, col = col[c$Site], pch = 16, cex = 1.5, xlab = "Chloride", ylab = "Sulfate")
+plot(c$Ca, c$pH, col = col[c$Site], pch = 16, cex = 1.5, xlab = "Calcium", ylab = "pH")
+
+
+
+
+plot(c$TCC, c$SO4, col = col[c$Site], cex = 2)
+plot(c$Ca, c$SM, col = col[c$Site], cex = 2)
+plot(c$LOI, c$DOC, col = col[c$Site], cex = 2)
+plot(c$Cl, c$Phenol/c$DOC, pch = 16, col = col[c$Site], cex = 2)
+
+head(c)
+
+
+pc <- c[, c(7,8,9,10,12,13,14,15,16,17,18,19,21,28,29)]
+pc[is.na(pc)] <- 2
+site <- c[, 2]
+
+
+par(mfrow = c(1,1), mar = c(4,8,4,5))
+
+#' Create a PCA for chemical characterisitcs of all soil cores
+#' 
+pca <-prcomp(pc, center = TRUE)
+print(pca)
+plot(pca)
+
+
+summary(pca) #100% of PCA variance, but not the actual NMS axis variance
+pca.scores<-pca$x
+pca.loading <- pca$rotation
+df <- cbind(site, pca.scores[,1:3])
+df <- cbind(df, resp)
+
+#' Plot the pca
+
+plot(df[,2], df[,3], pch = 16, cex = 1.5, col = col[site], 
+     main = "PCA all soil cores", 
+     xlab = "PC1", ylab = "PC2")
+arrows(0,0, pca.loading[,1]*7, pca.loading[,2]*7, length = 0.1, lwd = 1.5, col = "red")
+text(pca.loading[,1]*7.5, pca.loading[,2]*7.3, row.names(pca.loading), cex = 0.8, col = "red")
+
+
+
+
+
+
+
+
+pc <- c[, c(10,12,13,14,15,19, 29)]
+pc[is.na(pc)] <- 2
+site <- c[, 2]
+
+
+par(mfrow = c(1,1), mar = c(5,12,4,8))
+
+#' Create a PCA for chemical characterisitcs of all soil cores
+#' 
+pca <-prcomp(pc, center = TRUE)
+print(pca)
+plot(pca)
+
+
+summary(pca) #100% of PCA variance, but not the actual NMS axis variance
+pca.scores<-pca$x
+pca.loading <- pca$rotation
+df <- cbind(site, pca.scores[,1:3])
+
+
+#' Plot the pca
+
+plot(df[,2], df[,3], pch = 16, cex = 1.5, col = col[site], 
+     main = "PCA all soil cores", 
+     xlab = "PC1", ylab = "PC2")
+arrows(0,0, pca.loading[,1]*6, pca.loading[,2]*6, length = 0.1, lwd = 1.5, col = "gray50")
+text(pca.loading[,1]*9, pca.loading[,2]*9, row.names(pca.loading), cex = 0.8, col = "gray50")
 
 
