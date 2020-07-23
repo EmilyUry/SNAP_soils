@@ -89,20 +89,129 @@ abline(v=4.5)
 
 
 c <- x[which(x$Treatment == "Control"),]
-
+s <- x[which(x$Treatment == "Salt"),]
 col <- c("red", "black", "purple", "black", "blue") 
 
-par(mfrow = c(1,2), mar = c(5,5,3,3))
+par(mfrow = c(2,2), mar = c(5,5,3,3))
+
+
+hist(c$pH, col = "#9400D399", breaks = 10)
+
+hist(c$pH, col = "purple")
+
+d <- density(c$pH)
+d1 <- density(c$pH[which(c$Site == 1)])
+plot(d1, main="pH", ylim = c(0,1.7), xlim = c(3,6.5), xlab = "pH")
+polygon(d1, col="#FF000099", border="red")
+d3 <- density(c$pH[which(c$Site == 3)])
+polygon(d3, col="#9400D399", border="purple")
+d5 <- density(c$pH[which(c$Site == 5)])
+polygon(d5, col="#0000FF99", border="blue")
+
+
+
+# d <- density(c$Cl)
+# #plot(d1)
+# d1 <- density(c$Cl[which(c$Site == 1)])
+# plot(d1, main="Chloride", ylim = c(0,2), xlim = c(-2,8), xlab = "Chloride")
+# polygon(d1, col="#FF000099", border="red")
+# d3 <- density(c$Cl[which(c$Site == 3)])
+# polygon(d3, col="#9400D399", border="purple")
+# d5 <- density(c$Cl[which(c$Site == 5)])
+# polygon(d5, col="#0000FF99", border="blue")
+# 
+
+# 
+# d <- density(c$Na)
+# #plot(d1)
+# d1 <- density(c$Na[which(c$Site == 1)])
+# plot(d1, main="Sodium", ylim = c(0,1.3), xlim = c(0,9), xlab = "Sodium")
+# polygon(d1, col="#FF000099", border="red")
+# d3 <- density(c$Na[which(c$Site == 3)])
+# polygon(d3, col="#9400D399", border="purple")
+# d5 <- density(c$Na[which(c$Site == 5)])
+# polygon(d5, col="#0000FF99", border="blue")
+
+
+
+
+
+# #
+# d <- density(c$DOC)
+# #plot(d)
+# d1 <- density(c$DOC[which(c$Site == 1)])
+# plot(d1, main="DOC", ylim = c(0,0.25), xlim = c(-1,45), xlab = "DOC")
+# polygon(d1, col="#FF000099", border="red")
+# d3 <- density(c$DOC[which(c$Site == 3)])
+# polygon(d3, col="#9400D399", border="purple")
+# d5 <- density(c$DOC[which(c$Site == 5)])
+# polygon(d5, col="#0000FF99", border="blue")
+# 
+
+
+d <- density(c$LOI)
+#plot(d)
+d1 <- density(c$LOI[which(c$Site == 1)])
+plot(d1, main="Soil Organic Matter", ylim = c(0,1), xlim = c(5,14), xlab = "Soil Orgnaic Matter (%)")
+polygon(d1, col="#FF000099", border="red")
+d3 <- density(c$LOI[which(c$Site == 3)])
+polygon(d3, col="#9400D399", border="purple")
+d5 <- density(c$LOI[which(c$Site == 5)])
+polygon(d5, col="#0000FF99", border="blue")
+
+d <- density(c$SO4)
+#plot(d1)
+d1 <- density(c$SO4[which(c$Site == 1)])
+plot(d1, main="Sulfate", ylim = c(0,1), xlim = c(-1,6), xlab = "Sulfate (mg/L)")
+polygon(d1, col="#FF000099", border="red")
+d3 <- density(c$SO4[which(c$Site == 3)])
+polygon(d3, col="#9400D399", border="purple")
+d5 <- density(c$SO4[which(c$Site == 5)])
+polygon(d5, col="#0000FF99", border="blue")
+
+# d <- density(c$Ca)
+# #plot(d)
+# d1 <- density(c$Ca[which(c$Site == 1)])
+# plot(d1, main="Calcium", ylim = c(0,1.7), xlim = c(0,6), xlab = "Calcium")
+# polygon(d1, col="#FF000099", border="red")
+# d3 <- density(c$Ca[which(c$Site == 3)])
+# polygon(d3, col="#9400D399", border="purple")
+# d5 <- density(c$Ca[which(c$Site == 5)])
+# polygon(d5, col="#0000FF99", border="blue")
+
+
+
+#plot(d)
+d1 <- density(c$BD[which(c$Site == 1)])
+plot(d1, main="Bulk Density", ylim = c(0,5), xlim = c(0.5,1.7), xlab = "Bulk Density (g/cm3)")
+polygon(d1, col="#FF000099", border="red")
+d3 <- density(c$BD[which(c$Site == 3)])
+polygon(d3, col="#9400D399", border="purple")
+d5 <- density(c$BD[which(c$Site == 5)])
+polygon(d5, col="#0000FF99", border="blue")
+
+
+
+
+
+
 
 plot(c$Cl, c$SO4, col = col[c$Site], pch = 16, cex = 1.5, xlab = "Chloride", ylab = "Sulfate")
 plot(c$Ca, c$pH, col = col[c$Site], pch = 16, cex = 1.5, xlab = "Calcium", ylab = "pH")
 
-
-
+plot(c$LOI, c$Phenol,col = col[c$Site], pch = 16, cex = 1.5, xlab = "LOI", ylab = "Phenol")
+plot(c$pH, c$DOC,col = col[c$Site], pch = 16, cex = 1.5, xlab = "pH", ylab = "DOC")
+plot(c$pH, c$LOI,col = col[c$Site], pch = 16, cex = 1.5, xlab = "pH", ylab = "LOI")
 
 plot(c$TCC, c$SO4, col = col[c$Site], cex = 2)
 plot(c$Ca, c$SM, col = col[c$Site], cex = 2)
+
 plot(c$LOI, c$DOC, col = col[c$Site], cex = 2)
+
+
+plot(s$LOI, s$DOC, col = col[s$Site], cex = 2, pch = 16, xlim = c(6, 20), ylim = c(10, 31))
+points(c$LOI, c$DOC, col = col[c$Site], cex = 2, add = TRUE)
+
 plot(c$Cl, c$Phenol/c$DOC, pch = 16, col = col[c$Site], cex = 2)
 
 head(c)
