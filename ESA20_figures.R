@@ -341,6 +341,13 @@ plot(c$Cl, c$Phenol/c$DOC, pch = 16, col = col[c$Site], cex = 2)
 head(c)
 
 
+
+plot(x$LOI, x$Cmin_s, col = col[x$Site], pch = 21,  bg = ifelse(x$Treatment == "Control", "white", col[x$Site]))
+plot(x$DOC, x$Cmin_s,  col = col[x$Site], pch = 21,  bg = ifelse(x$Treatment == "Control", "white", col[x$Site]))
+
+
+
+
 pc <- c[, c(7,8,9,10,12,13,14,15,16,17,18,19,21,28,29)]
 pc[is.na(pc)] <- 2
 site <- c[, 2]
