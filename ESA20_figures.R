@@ -22,6 +22,7 @@ colnames(lX)<-paste("log",colnames(lX),sep="")
 x<-cbind(x,lX); rm(lX)
 
 x$ID<-paste(x$Site,x$Treatment,x$Core,sep="")
+x$Site_treat <- paste(x$Site, x$Treatment, sep = "-")
 
 ## for now, lets ignore the nutrient and sn treatments
 
@@ -50,12 +51,117 @@ boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill,
 abline(v=2.5)
 abline(v=4.5)
 
+## here is some mumbo jumbo i tried that didn't work for pairwise comparisons
+{
+# library(car)
+# fit <- lm(DOC ~ Treatment*Site, data=x)
+# Anova(fit, type = "II")
+# fit
+# summary(fit)
+# TukeyHSD(fit)
+# 
+# 
+# library(lsmeans)
+# 
+# marginal = lsmeans(fit,
+#                    pairwise ~ Treatment:Site,
+#                    adjust="tukey")           ### Tukey-adjusted comparisons
+# 
+# marginal$contrasts
+# 
+# library(emmeans)
+# marginal <- emmeans(fit, ~ Treatment*Site)  
+# pairs(marginal)
+# 
+# library("ggplot2")
+# 
+# pwpp(marginal, method = "pairwise")
+# 
+# pwpp(marginal, by = "Treatment", type = "Site")
+# 
+# multcomp::cld(marginal,
+#     alpha=0.05,
+#     Letters=letters,      ### Use lower-case letters for .group
+#     adjust="tukey") 
+  }
+
+library(multcomp)
+x$Site_treat <- as.factor(x$Site_treat)
+aov <- aov(DOC~Site_treat, x)
+tukey <- glht(aov, linfct=mcp(Site_treat="Tukey"))
+cld(tukey)
+summary(tukey)
+
+
+kruskal.test(DOC ~ Site_treat, data = x)  ## p-value is greater than 0.05, no sig diff between groups
+pairwise.wilcox.test(x$DOC, x$Site_treat,
+                     p.adjust.method = "BH")
+
+### significance codes are:
+### A  A  A A B B
+
+
 response <- x$Cmin_s
 boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill, 
-        ylab = "Respiration (ug C-CO2 / g dry soil)", 
+        ylab = "Respiration (ug C-CO2 /g dry soil/hour)", 
         xlab = NULL, xaxt = 'n')
 abline(v=2.5)
 abline(v=4.5)
+
+
+aov <- aov(Cmin_s~Site_treat, x)
+tukey <- glht(aov, linfct=mcp(Site_treat="Tukey"))
+cld(tukey)
+
+kruskal.test(Cmin_s ~ Site_treat, data = x)  ## p-value is greater than 0.05, no sig diff between groups
+pairwise.wilcox.test(x$Cmin_s, x$Site_treat,
+                     p.adjust.method = "BH")
+
+
+
+## significance codes are:
+### A  A  A A B B
+
+
+
+
+
+response <- x$Cmin_c
+boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill, 
+        ylab = "Respiration (ug C-CO2 /g C/hour)", 
+        xlab = NULL, xaxt = 'n')
+abline(v=2.5)
+abline(v=4.5)
+
+
+aov <- aov(Cmin_c~Site_treat, x)
+tukey <- glht(aov, linfct=mcp(Site_treat="Tukey"))
+cld(tukey)
+
+kruskal.test(Cmin_c ~ Site_treat, data = x)  ## p-value is greater than 0.05, no sig diff between groups
+pairwise.wilcox.test(x$Cmin_s, x$Site_treat,
+                     p.adjust.method = "BH")
+
+
+
+response <- x$LOI
+boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill, 
+        ylab = "LOI (%))", 
+        xlab = NULL, xaxt = 'n')
+abline(v=2.5)
+abline(v=4.5)
+
+
+aov <- aov(LOI~Site_treat, x)
+tukey <- glht(aov, linfct=mcp(Site_treat="Tukey"))
+cld(tukey)
+
+kruskal.test(LOI ~ Site_treat, data = x)  ## p-value is greater than 0.05, no sig diff between groups
+pairwise.wilcox.test(x$Cmin_s, x$Site_treat,
+                     p.adjust.method = "BH")
+
+
+
 
 
 ###### PLANTS
@@ -65,13 +171,23 @@ abline(v=4.5)
 data <- read.csv("TL_tree_DBH.csv", header = T)
 names(data) <- c("Site", "Plot", "Treatment", "Species", "Tag", "D15", "D16", "D17", "D18", "D19")
 data <- data[which(data$Treatment == "S" | data$Treatment == "C"),]
+data$Site_treat <- paste(x$Site, x$Treatment, sep = "-")
+data$Site_treat <- as.factor(data$Site_treat)
 
 data$growth <- data$D19 - data$D15
 boxplot(growth ~ Treatment*Site, data = data, border = col, col = col.fill, 
         ylab = "Tree growth (DBH cm)", 
-        xlab = NULL)
+        xlab = NULL, xaxt = 'n')
 abline(v=2.5)
 abline(v=4.5)
+
+aov <- aov(growth~Site_treat, data)
+tukey <- glht(aov, linfct=mcp(Site_treat="Tukey"))
+cld(tukey)
+
+kruskal.test(growth ~ Site_treat, data = data)  ## p-value is greater than 0.05, no sig diff between groups
+pairwise.wilcox.test(data$growth, data$Site_treat,
+                     p.adjust.method = "BH")
 
 
 
@@ -79,9 +195,17 @@ abline(v=4.5)
 response <- x$Roots
 boxplot(response ~ Treatment*Site, data = x, border = col, col = col.fill, 
         ylab = "Root biomass (g)", 
-        xlab = NULL)
+        xlab = NULL, xaxt = 'n')
 abline(v=2.5)
 abline(v=4.5)
+
+aov <- aov(Roots~Site_treat, x)
+tukey <- glht(aov, linfct=mcp(Site_treat="Tukey"))
+cld(tukey)
+
+kruskal.test(Roots ~ Site_treat, data = x)  ## p-value is greater than 0.05, no sig diff between groups
+pairwise.wilcox.test(x$Roots, x$Site_treat,
+                     p.adjust.method = "BH")
 
 
 
