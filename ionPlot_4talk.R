@@ -143,7 +143,7 @@ err.Ca <- sqrt((sumS$sd)^2 + (sumC$sd)^2)
 
 df <- cbind(sum.clS[,1:3], ES.cl, err.cl, ES.SO4, err.SO4, ES.Na, err.Na, ES.K, err.K, ES.Mg, err.Mg, ES.Ca, err.Ca )
 
-xxp <- c(1.5,4.5,7.5
+xxp <- c(1.5,4.5,7.5)
 
 
 
@@ -176,17 +176,17 @@ for(i in seq){
 
 
 
-seq <- c(4,6,10,8,12,14)
+seq <- c(4,6,10,8,12,14) 
 
 dfa <- df[which(df$Depth == "(0-5)"),]
 xxp <- c(1.5,4.5,7.5)
 
-par(mfrow = c(2,3), mar = c(2,5,3,1), cex = 0.9)
+par(mfrow = c(2,3), mar = c(2,5,3,1), cex = 1)
 
 for(i in seq){
   
   plot(xxp, dfa[,i]/rec[i]*100, xaxt = "n", xlim = c(0,9), ylim = c(-11, 20), 
-       pch = 15, cex = 1.5, col = c("#d6604d", "#9970AB",  "#4393C3"), 
+       pch = 15, cex = 2, col = c("#d6604d", "#9970AB",  "#4393C3"), 
        ylab = "% Recovery", xlab = " ", 
        main = lab[i])
   axis(3, at = c(1.5), labels = c("Dry"), line = -1, tick = FALSE, font = 2, cex = 2, 
