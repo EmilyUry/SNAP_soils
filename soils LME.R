@@ -31,6 +31,9 @@ x$ID<-paste(x$Site,x$Treatment,x$Core,sep="")
 x <- x[which(x$Treatment == "Salt" | x$Treatment == "Control"), ]
 x$Treatment <- as.factor(x$Treatment)
 
+x$Site <- as.factor(x$Site)
+
+
 col3 <- c("#d6604d", "black", "#9970AB","black", "#4393C3") ## medium
 
 par(mfrow = c(1,1), mar = c(4,4,3,3))
@@ -99,12 +102,25 @@ anova(null4, model4d)  # Cl alone
 anova(null4, model4e)  # ph alone
 anova(null4, model4f)  # SO4 alone
 
-anova(model4, model4a)
-
+anova(model4, model4d)
+summary(model4e)
 
 model4d <- lmer(Response ~ logCl + (1+ logCl|Site), data = x, REML = F)
 null4d <- lmer(Response ~ 1 + (1+ logCl|Site), data = x, REML = F)
 anova(null4d, model4d)  # Cl alone
+
+
+
+
+## testing for an interaction
+model5 <- lmer((Response) ~ logCl * logSO4 * pH + (1|Site), data = x, REML = F)
+null5 <- lmer((Response) ~ logCl + logSO4 + pH + (1|Site), data = x, REML = F)
+summary(model5)
+anova(null5, model5)
+
+
+
+
 
 
 
